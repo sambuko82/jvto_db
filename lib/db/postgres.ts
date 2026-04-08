@@ -88,7 +88,8 @@ export async function getDatabaseStats() {
     getTableStats(),
   ]);
 
-  const totalRecords = stats.reduce((sum, row) => sum + (row.row_count || 0), 0);
+  // n_live_tup is bigint → pg returns it as string, must parseInt
+  const totalRecords = stats.reduce((sum, row) => sum + (parseInt(row.row_count) || 0), 0);
 
   return {
     totalTables: tables.length,

@@ -66,7 +66,7 @@ export async function getBackofficeStats() {
       queryMysql(
         `SELECT COALESCE(SUM(nominal), 0) AS total FROM booking_payments WHERE is_paid = 1`
       ),
-      // Total users (internal team/agents)
+      // Total users (contacts/customers in legacy system)
       queryMysql(`SELECT COUNT(*) AS count FROM users`),
     ]);
 

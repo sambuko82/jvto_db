@@ -56,7 +56,7 @@ export default function BackofficeIntegration() {
     { icon: Calendar,   label: 'Dashboard Status',  value: error ? 'Error' : loading ? '...' : 'Connected',   status: error ? 'error' : 'success' },
     { icon: Users,      label: 'Active Bookings',   value: loading ? '...' : stats?.activeBookings?.toLocaleString() || '—', status: 'info' },
     { icon: DollarSign, label: 'Total Terbayar',    value: loading ? '...' : (stats?.totalPayments ? formatRupiah(stats.totalPayments) : '—'), status: 'success' },
-    { icon: TrendingUp, label: 'Staff Internal',   value: loading ? '...' : stats?.totalUsers?.toLocaleString() || '—', status: 'info' },
+    { icon: TrendingUp, label: 'Kontak (Legacy)',  value: loading ? '...' : stats?.totalUsers?.toLocaleString() || '—', status: 'info' },
   ];
 
   return (
