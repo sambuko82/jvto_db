@@ -1,0 +1,98 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply box-border;
+  }
+
+  html {
+    @apply scroll-smooth;
+  }
+
+  body {
+    @apply bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-slate-800/50 border border-slate-700 rounded-lg p-6;
+  }
+
+  .card-hover {
+    @apply card hover:border-slate-600 hover:bg-slate-800/70 transition-all duration-300;
+  }
+
+  .metric-card {
+    @apply bg-slate-800/30 border border-slate-700/50 rounded-lg p-4;
+  }
+
+  .stat-value {
+    @apply text-3xl font-bold text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text;
+  }
+
+  .btn-primary {
+    @apply px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg font-semibold transition-colors;
+  }
+
+  .btn-secondary {
+    @apply px-4 py-2 border border-slate-600 hover:bg-slate-700 rounded-lg font-semibold transition-colors;
+  }
+
+  .badge {
+    @apply inline-block px-3 py-1 rounded-full text-xs font-semibold;
+  }
+
+  .badge-success {
+    @apply badge bg-green-500/20 text-green-400;
+  }
+
+  .badge-warning {
+    @apply badge bg-yellow-500/20 text-yellow-400;
+  }
+
+  .badge-info {
+    @apply badge bg-blue-500/20 text-blue-400;
+  }
+}
+
+/* Recharts customization */
+.recharts-default-tooltip {
+  @apply bg-slate-800 border border-slate-700 rounded-lg;
+}
+
+.recharts-text {
+  @apply fill-slate-300;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  @apply w-2;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-slate-900;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-slate-700 rounded-full hover:bg-slate-600;
+}
+
+/* Animation */
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-in {
+  @apply animate-in;
+  animation: slide-in 0.3s ease-out;
+}
