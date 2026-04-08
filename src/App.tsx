@@ -4,22 +4,24 @@
  */
 
 import { motion, useScroll, useTransform } from "motion/react";
-import { 
-  Mountain, 
-  MapPin, 
-  Calendar, 
-  Users, 
-  ChevronRight, 
-  Star, 
-  Camera, 
+import {
+  Mountain,
+  MapPin,
+  Calendar,
+  Users,
+  ChevronRight,
+  Star,
+  Camera,
   Compass,
   Menu,
   X,
   Instagram,
   Facebook,
-  Twitter
+  Twitter,
+  Database
 } from "lucide-react";
 import { useState, useRef } from "react";
+import DBMirrorDashboard from "./components/DBMirrorDashboard";
 
 const tours = [
   {
@@ -85,6 +87,7 @@ const verificationDocs = [
 
 export default function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState<'home' | 'db-mirror'>('home');
   const heroRef = useRef(null);
   const { scrollYProgress } = useScroll({
     target: heroRef,
@@ -93,6 +96,10 @@ export default function App() {
 
   const y = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
   const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
+
+  if (currentPage === 'db-mirror') {
+    return <DBMirrorDashboard />;
+  }
 
   return (
     <div className="min-h-screen bg-black text-white selection:bg-gold selection:text-black">
@@ -109,6 +116,13 @@ export default function App() {
             <a href="#about" className="hover:text-gold transition-colors">About</a>
             <a href="#verification" className="hover:text-gold transition-colors">Verification</a>
             <a href="#contact" className="hover:text-gold transition-colors">Contact</a>
+            <button
+              onClick={() => setCurrentPage('db-mirror')}
+              className="px-4 py-2 glass border border-gold text-gold font-bold rounded-full hover:bg-gold/10 transition-all flex items-center gap-2"
+            >
+              <Database className="w-4 h-4" />
+              DB Mirror
+            </button>
             <button className="px-6 py-2 bg-gold text-black font-bold rounded-full hover:bg-white transition-all transform hover:scale-105">
               Book Now
             </button>
