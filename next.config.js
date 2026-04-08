@@ -9,12 +9,12 @@ const nextConfig = {
       },
     ],
   },
+  // Only expose safe, non-sensitive variables to the client
   env: {
-    DB_HOST: process.env.DB_HOST || '31.97.223.43',
-    DB_PORT: process.env.DB_PORT || '5432',
-    DB_NAME: process.env.DB_NAME || 'jvto_dev',
-    BACKOFFICE_URL: process.env.BACKOFFICE_URL || 'https://new-backoffice.javavolcano-touroperator.com',
+    NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME || 'JVTO Unified Dashboard',
+    NEXT_PUBLIC_API_BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL || '/api',
   },
+  // All DB/backoffice env vars are server-side only (no NEXT_PUBLIC_ prefix)
 };
 
 module.exports = nextConfig;

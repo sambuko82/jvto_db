@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { Database, BarChart3, Zap, TrendingUp, Users, Package, Calendar, MapPin } from 'lucide-react';
+import { useState } from 'react';
+import { Database, BarChart3, Zap, TrendingUp, Package } from 'lucide-react';
 import DashboardHeader from '@/components/DashboardHeader';
 import MetricsGrid from '@/components/MetricsGrid';
 import LayerVisualization from '@/components/LayerVisualization';
@@ -12,23 +12,7 @@ import RealtimeMetrics from '@/components/RealtimeMetrics';
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<'overview' | 'layers' | 'tables' | 'backoffice' | 'dataflow'>('overview');
-  const [isLoading, setIsLoading] = useState(true);
-  const [dashboardData, setDashboardData] = useState(null);
-
-  useEffect(() => {
-    // Simulate data loading
-    setTimeout(() => {
-      setIsLoading(false);
-      setDashboardData({
-        totalTables: 95,
-        totalRecords: 1247,
-        customers: 442,
-        bookings: 415,
-        packages: 28,
-        destinations: 10,
-      });
-    }, 500);
-  }, []);
+  const [isLoading] = useState(false);
 
   const tabs = [
     { id: 'overview', label: '📊 Overview', icon: BarChart3 },
@@ -82,7 +66,7 @@ export default function Home() {
             {/* Overview Tab */}
             {activeTab === 'overview' && (
               <div className="space-y-8 animate-slide-in">
-                <MetricsGrid data={dashboardData} />
+                <MetricsGrid />
                 <RealtimeMetrics />
                 <div className="grid md:grid-cols-2 gap-8">
                   <div className="card">
