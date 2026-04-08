@@ -93,6 +93,5 @@
 }
 
 .animate-slide-in {
-  @apply animate-in;
   animation: slide-in 0.3s ease-out;
 }
