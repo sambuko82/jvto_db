@@ -2,6 +2,7 @@
  * Health Check Route
  * GET /api/health
  */
+export const dynamic = 'force-dynamic';
 
 import { NextResponse } from 'next/server';
 import { getPostgresPool } from '@/lib/db/postgres';

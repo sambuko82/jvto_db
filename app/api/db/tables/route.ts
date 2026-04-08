@@ -3,6 +3,7 @@
  * GET /api/db/tables
  * Query params: ?limit=20&offset=0&search=users
  */
+export const dynamic = 'force-dynamic';
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getDatabaseTables, getTableData } from '@/lib/db/postgres';
@@ -16,7 +17,6 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get('search') || '';
     const tableName = searchParams.get('table') || '';
 
-    // If specific table requested, return its data
     if (tableName) {
       const data = await getTableData(tableName, limit);
       const response: ApiResponse = {
@@ -27,17 +27,14 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(response);
     }
 
-    // Otherwise list all tables
     let tables = await getDatabaseTables();
 
-    // Filter by search
     if (search) {
       tables = tables.filter((table) =>
         table.toLowerCase().includes(search.toLowerCase())
       );
     }
 
-    // Apply pagination
     const paginatedTables = tables.slice(offset, offset + limit);
 
     const response: ApiResponse = {
@@ -55,13 +52,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(response);
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Failed to fetch database tables';
-
-    const response: ApiResponse = {
-      success: false,
-      error: errorMessage,
-      timestamp: new Date().toISOString(),
-    };
-
-    return NextResponse.json(response, { status: 500 });
+    return NextResponse.json({ success: false, error: errorMessage, timestamp: new Date().toISOString() } as ApiResponse, { status: 500 });
   }
 }

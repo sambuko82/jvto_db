@@ -1,59 +1,23 @@
-/**
- * SSOT Data Route
- * GET /api/ssot/data
- * Query params: ?section=destinations&reload=false
- */
-
+export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
 import { loadSSOT, getSSSTSection, reloadSSO } from '@/lib/ssot';
 import { ApiResponse, SSOT } from '@/lib/types';
 
 export async function GET(request: NextRequest) {
   try {
-    const searchParams = request.nextUrl.searchParams;
-    const section = searchParams.get('section') || '';
-    const reload = searchParams.get('reload') === 'true';
+    const section = request.nextUrl.searchParams.get('section') || '';
+    const reload = request.nextUrl.searchParams.get('reload') === 'true';
 
-    if (reload) {
-      await reloadSSO();
+    if (reload) await reloadSSO();
+
+    const data = section ? await getSSSTSection(section) : await loadSSOT();
+
+    if (section && !data) {
+      return NextResponse.json({ success: false, error: `Section '${section}' not found`, timestamp: new Date().toISOString() } as ApiResponse, { status: 404 });
     }
 
-    let data: any;
-
-    if (section) {
-      // Get specific section
-      data = await getSSSTSection(section);
-      if (!data) {
-        return NextResponse.json(
-          {
-            success: false,
-            error: `Section '${section}' not found in SSOT`,
-            timestamp: new Date().toISOString(),
-          } as ApiResponse,
-          { status: 404 }
-        );
-      }
-    } else {
-      // Get entire SSOT
-      data = await loadSSOT();
-    }
-
-    const response: ApiResponse<SSOT> = {
-      success: true,
-      data,
-      timestamp: new Date().toISOString(),
-    };
-
-    return NextResponse.json(response);
+    return NextResponse.json({ success: true, data, timestamp: new Date().toISOString() } as ApiResponse<SSOT>);
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Failed to load SSOT data';
-
-    const response: ApiResponse = {
-      success: false,
-      error: errorMessage,
-      timestamp: new Date().toISOString(),
-    };
-
-    return NextResponse.json(response, { status: 500 });
+    return NextResponse.json({ success: false, error: error instanceof Error ? error.message : 'Failed', timestamp: new Date().toISOString() } as ApiResponse, { status: 500 });
   }
 }

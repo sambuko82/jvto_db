@@ -2,6 +2,7 @@
  * Database Statistics Route
  * GET /api/db/stats
  */
+export const dynamic = 'force-dynamic';
 
 import { NextResponse } from 'next/server';
 import { getDatabaseStats } from '@/lib/db/postgres';
