@@ -23,11 +23,16 @@ export default function MetricsGrid() {
           fetchBackofficeStats(),
         ]);
 
+        // Primary data: PostgreSQL DB Mirror (customer-facing source of truth)
+        const pgBookings  = dbStats?.tables?.find(t => t.name === 'bookings')?.records;
+        const pgPackages  = dbStats?.tables?.find(t => t.name === 'packages')?.records;
+        const pgDestinations = dbStats?.tables?.find(t => t.name === 'destinations')?.records;
+
         setStats({
-          totalCustomers: boStats?.totalCustomers?.toLocaleString() || '—',
-          activeBookings: boStats?.activeBookings?.toLocaleString() || '—',
-          destinations: dbStats?.tables?.find(t => t.name === 'destinations')?.records?.toString() || '—',
-          tourPackages: dbStats?.tables?.find(t => t.name === 'packages')?.records?.toString() || '—',
+          totalCustomers: pgBookings?.toLocaleString() || '—',   // bookings ≈ customer engagements (customers table not yet synced)
+          activeBookings: boStats?.activeBookings?.toLocaleString() || '—', // operational from MySQL
+          destinations: pgDestinations?.toString() || '—',
+          tourPackages: pgPackages?.toLocaleString() || '—',
           databaseTables: dbStats?.totalTables ? `${dbStats.totalTables}` : '—',
           totalRecords: dbStats?.totalRecords ? (dbStats.totalRecords >= 1000 ? `${(dbStats.totalRecords / 1000).toFixed(1)}K` : `${dbStats.totalRecords}`) : '—',
         });
@@ -42,12 +47,12 @@ export default function MetricsGrid() {
   }, []);
 
   const metrics = [
-    { icon: Users,      label: 'Total Customers',  value: stats.totalCustomers,  color: 'from-blue-500',   trend: '+12%' },
-    { icon: Package,    label: 'Active Bookings',  value: stats.activeBookings,  color: 'from-purple-500', trend: '+8%'  },
-    { icon: MapPin,     label: 'Destinations',     value: stats.destinations,    color: 'from-green-500',  trend: 'Full' },
-    { icon: Calendar,   label: 'Tour Packages',    value: stats.tourPackages,    color: 'from-pink-500',   trend: 'Ready'},
-    { icon: Zap,        label: 'Database Tables',  value: stats.databaseTables,  color: 'from-amber-500',  trend: 'Live' },
-    { icon: TrendingUp, label: 'Data Records',     value: stats.totalRecords,    color: 'from-cyan-500',   trend: '+5%'  },
+    { icon: Users,      label: 'Total Bookings',    value: stats.totalCustomers,  color: 'from-blue-500',   trend: 'Live' },
+    { icon: Package,    label: 'Ops Aktif',         value: stats.activeBookings,  color: 'from-purple-500', trend: 'MySQL'},
+    { icon: MapPin,     label: 'Destinations',      value: stats.destinations,    color: 'from-green-500',  trend: 'Full' },
+    { icon: Calendar,   label: 'Tour Packages',     value: stats.tourPackages,    color: 'from-pink-500',   trend: 'Ready'},
+    { icon: Zap,        label: 'Database Tables',   value: stats.databaseTables,  color: 'from-amber-500',  trend: 'Live' },
+    { icon: TrendingUp, label: 'Total Records',     value: stats.totalRecords,    color: 'from-cyan-500',   trend: 'Sync' },
   ];
 
   return (

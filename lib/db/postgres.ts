@@ -55,8 +55,8 @@ export async function getTableStats(): Promise<any[]> {
   const result = await queryPostgres(
     `SELECT
        schemaname,
-       tablename,
-       n_live_tup as row_count
+       relname AS tablename,
+       n_live_tup AS row_count
      FROM pg_stat_user_tables
      ORDER BY n_live_tup DESC`
   );

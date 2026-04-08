@@ -1,6 +1,10 @@
 /**
  * MySQL Backoffice Database Connection
  * Connects to: 153.92.9.37:3306 (u1805424_jvto_clone)
+ *
+ * NOTE: This is the LEGACY internal backoffice database.
+ * Primary (customer-facing) data source is PostgreSQL DB Mirror.
+ * MySQL is used for internal operational data only.
  */
 
 import mysql from 'mysql2/promise';
@@ -45,75 +49,88 @@ export async function queryMysql<T = any>(
   }
 }
 
+/**
+ * Internal backoffice stats — from legacy MySQL
+ * NOTE: These are historical/operational numbers.
+ * For customer-facing metrics, use PostgreSQL DB Mirror.
+ */
 export async function getBackofficeStats() {
   try {
-    const [bookings, payments, customers] = await Promise.all([
+    const [bookings, payments, users] = await Promise.all([
+      // Active bookings (exclude cancelled/rejected/draft)
       queryMysql(
-        `SELECT COUNT(*) as count FROM bookings WHERE status NOT IN ('cancelled', 'rejected')`
+        `SELECT COUNT(*) AS count FROM bookings
+         WHERE status NOT IN ('cancelled', 'rejected', 'draft')`
       ),
+      // Total paid amount from booking_payments
       queryMysql(
-        `SELECT SUM(amount) as total FROM payments WHERE status = 'completed'`
+        `SELECT COALESCE(SUM(nominal), 0) AS total FROM booking_payments WHERE is_paid = 1`
       ),
-      queryMysql(`SELECT COUNT(*) as count FROM customers`),
+      // Total users (internal team/agents)
+      queryMysql(`SELECT COUNT(*) AS count FROM users`),
     ]);
 
     return {
-      activeBookings: (bookings[0] as any)?.count || 0,
-      totalPayments: (payments[0] as any)?.total || 0,
-      totalCustomers: (customers[0] as any)?.count || 0,
+      activeBookings: Number((bookings[0] as any)?.count) || 0,
+      totalPayments:  Number((payments[0] as any)?.total) || 0,
+      totalUsers:     Number((users[0] as any)?.count) || 0,
     };
   } catch (error) {
     console.error('Error fetching backoffice stats:', error);
     return {
       activeBookings: 0,
       totalPayments: 0,
-      totalCustomers: 0,
+      totalUsers: 0,
       error: 'Failed to fetch backoffice statistics',
     };
   }
 }
 
+/**
+ * Recent bookings from legacy MySQL backoffice
+ */
 export async function getRecentBookings(limit: number = 10) {
   try {
-    const bookings = await queryMysql(
+    return await queryMysql(
       `SELECT
         id,
-        booking_number,
-        customer_id,
-        tour_date,
-        total_price,
+        COALESCE(booking_numb, booking_code, CONCAT('#', id)) AS booking_number,
+        user_id,
+        travel_date_start AS tour_date,
+        grand_total        AS total_price,
         status,
+        payment_status,
         created_at
-      FROM bookings
-      ORDER BY created_at DESC
-      LIMIT ?`,
+       FROM bookings
+       ORDER BY created_at DESC
+       LIMIT ?`,
       [limit]
     );
-
-    return bookings;
   } catch (error) {
     console.error('Error fetching recent bookings:', error);
     return [];
   }
 }
 
+/**
+ * Recent payments from legacy MySQL backoffice (booking_payments table)
+ */
 export async function getRecentPayments(limit: number = 10) {
   try {
-    const payments = await queryMysql(
+    return await queryMysql(
       `SELECT
-        id,
-        booking_id,
-        amount,
-        payment_method,
-        status,
-        created_at
-      FROM payments
-      ORDER BY created_at DESC
-      LIMIT ?`,
+        bp.id,
+        bp.booking_id,
+        bp.nominal      AS amount,
+        pm.name         AS payment_method,
+        IF(bp.is_paid = 1, 'completed', 'pending') AS status,
+        bp.created_at
+       FROM booking_payments bp
+       LEFT JOIN payment_methods pm ON pm.id = bp.payment_method_id
+       ORDER BY bp.created_at DESC
+       LIMIT ?`,
       [limit]
     );
-
-    return payments;
   } catch (error) {
     console.error('Error fetching recent payments:', error);
     return [];

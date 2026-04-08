@@ -21,7 +21,7 @@ export interface DatabaseStats {
 export interface BackofficeStats {
   activeBookings: number;
   totalPayments: number;
-  totalCustomers: number;
+  totalUsers: number;       // internal users (agents/crew) — legacy MySQL
   error?: string;
 }
 

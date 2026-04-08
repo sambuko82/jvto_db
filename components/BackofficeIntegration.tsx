@@ -55,8 +55,8 @@ export default function BackofficeIntegration() {
   const topMetrics = [
     { icon: Calendar,   label: 'Dashboard Status',  value: error ? 'Error' : loading ? '...' : 'Connected',   status: error ? 'error' : 'success' },
     { icon: Users,      label: 'Active Bookings',   value: loading ? '...' : stats?.activeBookings?.toLocaleString() || '—', status: 'info' },
-    { icon: DollarSign, label: 'Total Payments',    value: loading ? '...' : (stats?.totalPayments ? formatRupiah(stats.totalPayments) : '—'), status: 'success' },
-    { icon: TrendingUp, label: 'Total Customers',   value: loading ? '...' : stats?.totalCustomers?.toLocaleString() || '—', status: 'success' },
+    { icon: DollarSign, label: 'Total Terbayar',    value: loading ? '...' : (stats?.totalPayments ? formatRupiah(stats.totalPayments) : '—'), status: 'success' },
+    { icon: TrendingUp, label: 'Staff Internal',   value: loading ? '...' : stats?.totalUsers?.toLocaleString() || '—', status: 'info' },
   ];
 
   return (
